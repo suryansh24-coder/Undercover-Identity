@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useIdentity } from '../../context/IdentityContext'
 import { useOptionalSound } from '../../hooks/useOptionalSound'
+import { useReducedMotion, useFinePointer } from '../../hooks/useReducedMotion'
 import { Scene, Reveal, SystemLabel } from '../common/Scene'
 import { ActionButton } from '../common/ActionButton'
 
@@ -10,9 +11,38 @@ const STATUS_ITEMS = [
   ['ACCESS', 'RESTRICTED'],
 ]
 
+function LandingLight({ enabled }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!enabled) return undefined
+    const node = ref.current
+    if (!node) return undefined
+    let raf = 0
+    const onMove = (event) => {
+      if (raf) return
+      raf = window.requestAnimationFrame(() => {
+        raf = 0
+        const rect = node.getBoundingClientRect()
+        node.style.setProperty('--lx', `${((event.clientX - rect.left) / rect.width) * 100}%`)
+        node.style.setProperty('--ly', `${((event.clientY - rect.top) / rect.height) * 100}%`)
+      })
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      if (raf) window.cancelAnimationFrame(raf)
+    }
+  }, [enabled])
+
+  return <div ref={ref} className="landing-light" aria-hidden="true" />
+}
+
 export default function Landing() {
   const { actions, state } = useIdentity()
   const play = useOptionalSound(state.soundEnabled)
+  const reduced = useReducedMotion()
+  const fine = useFinePointer()
 
   useEffect(() => {
     const t = window.setTimeout(() => actions.setBooted(), 120)
@@ -32,6 +62,18 @@ export default function Landing() {
           <i />
           <i />
         </div>
+
+        <div className="landing-radar" aria-hidden="true">
+          <i className="landing-radar-ring" />
+          <i className="landing-radar-ring" />
+          <i className="landing-radar-ring" />
+          <i className="landing-radar-cross" />
+          <i className="landing-radar-sweep" />
+          <span className="landing-radar-blip" />
+          <span className="landing-radar-blip" />
+        </div>
+
+        <LandingLight enabled={!reduced && fine} />
 
         <Reveal delay={140}>
           <SystemLabel icon="lock">SECTOR 09 · INTELLIGENCE DIVISION</SystemLabel>
@@ -77,6 +119,12 @@ export default function Landing() {
               </span>
             ))}
           </div>
+        </Reveal>
+
+        <Reveal delay={1180}>
+          <p className="landing-telemetry mono micro" aria-hidden="true">
+            TELEMETRY 0x3F9A · LINK SECURED · NODE 09 · CIPHER ACTIVE · SIGNAL 98.2%
+          </p>
         </Reveal>
       </div>
     </Scene>

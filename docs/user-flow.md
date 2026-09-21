@@ -15,12 +15,19 @@ All transition animations are skipped when the user prefers reduced motion.
 ## 01 — Landing
 
 - Cinematic title, tagline, system identifiers, "ENTER THE SYSTEM" entry.
+- Atmosphere: concentric rings, radar/targeting geometry, an encrypted
+  micro-text telemetry strip, and cursor-responsive lighting (fine pointers
+  only; disabled under reduced motion).
+- Entry fires a seven-line secure-channel transition before the clearance
+  scene.
 - Details: no images, no input.
 - Exit path: none (entry required).
 
 ## 02 — Security Clearance
 
-- Level-09 induction passage; "ACCESS GRANTED" confirms eligibility.
+- Level-09 induction passage; "ACCESS GRANTED" confirms eligibility and
+  issues the OPERATION NIGHTFALL mission briefing (your identity has been
+  compromised — forge a new cover).
 - Exit path: back to landing via "Return".
 
 ## 03 — Photograph
@@ -33,10 +40,15 @@ All transition animations are skipped when the user prefers reduced motion.
 
 ## 04 — Editor
 
-- Full working editor: filters, crop, draw, text, stickers, resize.
-- Tool rail on the left, canvas in the center, options panel on the right
-  (stacks below on mobile).
-- **Save & Continue** commits the edited data URL and advances to Cover.
+- The **Identity Modification Terminal** hosts the full Unlayer editor:
+  filters, crop, draw, text, shapes, stickers, resize.
+- A pipeline strip tracks SOURCE IMAGE → COVER IDENTITY → CLASSIFICATION
+  (UNVERIFIED until save).
+- Tool rail docks on the right; canvas in the center; options panel beside
+  the rail (stacks below on mobile).
+- **Save & Continue** briefly shows the completion frame (image integrity
+  verified, simulated 97.4% identity match) before committing the edited data
+  URL and advancing to Cover.
 - **Cancel / Return to Upload** discards edits to the session image and
   returns to Photograph.
 - If the session has no photograph (e.g. a direct browser reload into this
@@ -55,9 +67,12 @@ All transition animations are skipped when the user prefers reduced motion.
 
 ## 06 — Decrypt
 
-- Autonomous sequence: six status lines, noise fragments, progress rail, a
-  final "IDENTITY LOCATED." beat, then auto-advance to the dossier.
-- No user input; the back action is intentionally absent during processing.
+- Autonomous two-phase sequence: the cover is CLASSIFIED (five lines), then
+  DECRYPTED (six lines) with a progress rail and noise fragments, finishing
+  with a "MATCH FOUND / IDENTITY CONFIRMED" scan reveal before auto-advancing
+  to the dossier.
+- Skippable after the first beat via the on-screen "SKIP" action or the
+  Escape key; reduced-motion users get an automatic fast path.
 
 ## 07 — Dossier
 

@@ -24,8 +24,11 @@ EditorScene (App.jsx)
     • owns loading (React.lazy), load-error and fatal states
     • still the ONLY seam the rest of the app talks to
     └── UnlayerEditor.jsx   (lazy chunk)
-        • renders the step-02 chrome (header + Return action)
+        • renders the step-02 IDENTITY MODIFICATION TERMINAL chrome
+          (header, source→cover pipeline strip, classification badge)
         • hosts <ImageEditor> from @unlayer/react-image-editor
+        • covers the host with a completion frame after save, then commits
+          the exported data URL
 ```
 
 Nothing outside `src/components/ImageEditor/` was modified for the swap. The
@@ -65,16 +68,30 @@ final dossier always uses the edited image — never the original upload.
 ## Configuration in use
 
 ```js
-options: { theme: 'dark' }
-minHeight: 560
-style: { width: '100%', minHeight: 'min(72vh, 680px)' }
+options: {
+  theme: 'dark',
+  features: { imageEditor: { dock: 'right' } },
+}
+minHeight: 540
+style: { width: '100%', minHeight: 'min(68vh, 640px)' }
 ```
 
 - Dark theme matches the obsidian/champagne design language.
 - All default tools stay enabled (crop, resize, filter, draw, text, shapes,
   stickers, frame). AI Assistant is disabled (no `projectId`).
+- The tool rail docks right (`features.imageEditor.dock`) to mirror the
+  dossier layout on the later scene; the panel stacks below on narrow
+  viewports.
 - `data-export-skip` on the host keeps `html-to-image` from ever capturing
   the editor (defensive; editor is not mounted on the dossier scene).
+
+## The save beat
+
+On `onSave`, the host shows a ~1.5s completion frame ("IMAGE MODIFICATION
+COMPLETE", integrity verification, simulated 97.4% identity match) before the
+exported `dataUrl` is committed via `onSave(dataUrl, true)`. The commit is
+guarded against repeat fires and dropped when the scene unmounts. The frame is
+bypassed in automated flow tests because the slot is mocked there.
 
 ## Loading, error, and recovery handling (`ImageEditorSlot`)
 

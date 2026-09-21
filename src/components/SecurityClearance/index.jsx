@@ -12,7 +12,7 @@ const CHECKS = [
   ['ACCESS LEVEL', 'AUTHORIZED'],
 ]
 
-const STEP_DURATION = 620
+const STEP_DURATION = 520
 
 export default function SecurityClearance() {
   const { actions, state } = useIdentity()
@@ -83,6 +83,15 @@ export default function SecurityClearance() {
                 {granted ? 'ACCESS GRANTED' : '\u00A0'}
               </p>
               <p className="security-welcome">{granted ? 'WELCOME, OPERATIVE.' : '\u00A0'}</p>
+              {granted ? (
+                <div className="security-briefing">
+                  <span className="security-briefing-op mono">OPERATION NIGHTFALL</span>
+                  <p className="security-briefing-line">
+                    Your existing identity has been compromised. Forge a new cover before the
+                    network traces you.
+                  </p>
+                </div>
+              ) : null}
             </div>
 
             <div className="security-action">

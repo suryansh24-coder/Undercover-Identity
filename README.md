@@ -23,7 +23,7 @@ Undercover Identity is a self-contained, single-page experience that walks an op
 | 03 | **Photograph** | Upload a photo (JPG / PNG / WEBP, ≤12 MB), pre-scaled locally. |
 | 04 | **Modify** | Edit your photograph in the real **Unlayer Image Editor** (crop, resize, filters, draw, text, shapes, stickers, frames). |
 | 05 | **Cover** | Build your undercover identity: codename, operation, specialization, location, clearance, status, case file. |
-| 06 | **Decrypt** | Cinematic decryption sequence reveals "IDENTITY LOCATED." |
+| 06 | **Decrypt** | Two-phase cinematic sequence classifies the cover, then decrypts it into a "MATCH FOUND · IDENTITY CONFIRMED" reveal. |
 | 07 | **Dossier** | A full classified dossier document is rendered — download it as a PNG, copy it, or share it. |
 
 The result is a shareable, screen-capturable dossier that merges your photo, your cover story, and procedural details (case file number, document ID, classification band, barcode) into one piece of intelligence-theater.
@@ -44,7 +44,7 @@ The result is a shareable, screen-capturable dossier that merges your photo, you
   other step of the experience is offline.
 - **Cinematic presentation.** Obsidian/ink palette, champagne-gold identity accents, Anton display type, IBM Plex Mono system text, film-grain and scanline atmosphere, custom cursor, tilt + glare on the final document, optional system audio (off by default).
 - **Deterministic session state.** A small reducer (`src/context/identityReducer.js`) drives the workflow; every transition, notification, overlay, and reset is explicit and testable.
-- **Production quality.** ESLint clean, 32 unit tests, a strict production build, and a QA smoke script that boots `vite preview` and verifies the built assets.
+- **Tested.** 33 Vitest tests across validation, reducer, generation utilities, and a full editor→dossier flow, a strict production build, a QA smoke script that boots `vite preview` and verifies the built assets.
 
 ## Project status
 
@@ -52,7 +52,7 @@ The result is a shareable, screen-capturable dossier that merges your photo, you
 | --- | --- |
 | Experience flow | Complete |
 | Image editor | **Unlayer** `@unlayer/react-image-editor@1.0.2` integrated via `ImageEditorSlot` |
-| Tests | 32 unit tests across validation, reducer, generation utilities |
+| Tests | 33 Vitest tests (validation, reducer, generation, editor→dossier flow) |
 | CI | GitHub Actions (lint + test + build + QA) |
 | Production build | Verified — QA smoke 13/13 |
 

@@ -184,6 +184,93 @@
   animation: spin 70s linear infinite;
 }
 
+.landing-light {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    620px 400px at var(--lx, 50%) var(--ly, 50%),
+    rgba(236, 238, 242, 0.05),
+    transparent 70%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.landing-radar {
+  position: absolute;
+  top: 4%;
+  right: 3%;
+  width: 180px;
+  height: 180px;
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: -1;
+}
+.landing-radar-ring {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(201, 168, 106, 0.14);
+  border-radius: 50%;
+}
+.landing-radar-ring:nth-child(2) {
+  inset: 20%;
+  border-style: dashed;
+}
+.landing-radar-ring:nth-child(3) {
+  inset: 40%;
+}
+.landing-radar-cross::before,
+.landing-radar-cross::after {
+  content: '';
+  position: absolute;
+  background: rgba(201, 168, 106, 0.1);
+}
+.landing-radar-cross::before {
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+.landing-radar-cross::after {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+.landing-radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, rgba(201, 168, 106, 0.24), transparent 60deg);
+  animation: spin 7s linear infinite;
+}
+.landing-radar-blip {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--c-champagne);
+  box-shadow: 0 0 10px rgba(201, 168, 106, 0.9);
+  animation: pulse-dot 2.4s var(--ease-smooth) infinite;
+}
+.landing-radar-blip:first-of-type {
+  top: 62%;
+  left: 68%;
+}
+.landing-radar-blip:last-of-type {
+  top: 30%;
+  left: 42%;
+  animation-delay: 1.1s;
+}
+
+.landing-telemetry {
+  margin-top: var(--sp-4);
+  letter-spacing: 0.28em;
+  color: var(--c-muted);
+  opacity: 0.85;
+}
+
 @media (max-width: 640px) {
   .landing-inner {
     padding-top: var(--sp-6);
@@ -192,6 +279,15 @@
     gap: var(--sp-3) var(--sp-5);
     flex-direction: column;
     align-items: center;
+  }
+  .landing-radar {
+    display: none;
+  }
+  .landing-telemetry {
+    letter-spacing: 0.16em;
+    max-width: 92%;
+    text-align: center;
+    line-height: 1.7;
   }
 }
 
@@ -283,6 +379,30 @@
   color: var(--c-cool);
   text-transform: uppercase;
   margin-top: var(--sp-2);
+}
+.security-briefing {
+  margin-top: var(--sp-5);
+  padding: var(--sp-4) var(--sp-5);
+  border: 1px solid var(--line-gold);
+  border-left-width: 3px;
+  border-radius: var(--r-md);
+  background: linear-gradient(120deg, rgba(201, 168, 106, 0.06), transparent 70%);
+  animation: decrypt-in var(--dur-slow) var(--ease-out) both;
+}
+.security-briefing-op {
+  font-family: var(--font-display);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.26em;
+  color: var(--c-champagne);
+  text-transform: uppercase;
+}
+.security-briefing-line {
+  margin-top: var(--sp-2);
+  color: var(--c-cloud);
+  font-size: var(--fs-sm);
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
 }
 .security-action {
   text-align: center;
@@ -735,6 +855,65 @@
   letter-spacing: 0.3em;
   color: var(--c-crimson-bright);
   animation: pulse-dot 1.4s ease-in-out infinite;
+}
+.decrypt-beam {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 1;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 106, 0.9), transparent);
+  box-shadow: 0 0 24px rgba(201, 168, 106, 0.55);
+  animation: save-scan 1.05s var(--ease-smooth) infinite;
+  opacity: 0.8;
+}
+.decrypt-match {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-4) var(--sp-7);
+  border: 1px solid var(--line-gold);
+  border-radius: var(--r-lg);
+  background: radial-gradient(300px 120px at 50% 0%, rgba(201, 168, 106, 0.1), transparent 80%);
+  animation: decrypt-in var(--dur-slow) var(--ease-out) both;
+}
+.decrypt-match-find {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 4.6vw, 2.2rem);
+  letter-spacing: 0.3em;
+  color: var(--c-champagne);
+  text-transform: uppercase;
+  text-shadow: 0 0 34px rgba(201, 168, 106, 0.4);
+}
+.decrypt-match-sub {
+  letter-spacing: 0.26em;
+}
+.decrypt-tools {
+  min-height: 34px;
+  display: flex;
+  justify-content: center;
+}
+.decrypt-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-micro);
+  letter-spacing: 0.24em;
+  color: var(--c-muted);
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-full);
+  opacity: 0;
+  transition: all var(--dur-med) var(--ease-out);
+}
+.decrypt-skip.is-visible {
+  opacity: 1;
+}
+.decrypt-skip:hover,
+.decrypt-skip:focus-visible {
+  color: var(--c-champagne);
+  border-color: var(--line-gold);
 }
 
 /* ---- Dossier scene shell (in dossier.css) ---- */

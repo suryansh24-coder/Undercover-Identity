@@ -7,7 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- (no entries yet)
+### Added
+
+- **Identity Modification Terminal.** The unlayer editor scene now reads as a
+  classified modification bay: step-02 chrome, a SOURCE IMAGE → COVER
+  IDENTITY → CLASSIFICATION pipeline strip, and a completion frame after save
+  ("IMAGE MODIFICATION COMPLETE", integrity lines, simulated 97.4% identity
+  match) before the edited image is committed.
+- **Two-phase decryption sequence.** The cover is first CLASSIFIED (five
+  lines) then DECRYPTED (six lines), ending in a "MATCH FOUND / IDENTITY
+  CONFIRMED" scan reveal before the dossier materializes. Skippable via the
+  on-screen action, the Escape key, or an automatic fast path under reduced
+  motion.
+- **Mission briefing.** Security Clearance now issues an OPERATION NIGHTFALL
+  briefing once access is granted, giving the image-editing step narrative
+  purpose.
+- **Landing atmosphere.** Radar/targeting geometry, an encrypted micro-text
+  telemetry strip, and cursor-responsive lighting (fine pointers only,
+  disabled under reduced motion).
+- Entry transition overlay expanded to seven lines (secure channel →
+  biometric channel → database connected → access granted).
+
+### Changed
+
+- Editor host options turn the tool rail to a right-side dock
+  (`features.imageEditor.dock: 'right'`), matching the dossier-stepper
+  layout; theme stays dark.
+- Reduced the entry overlay and security-clearance pacing so the seven-line
+  sequence still lands well inside automated flow-test deadlines.
+- Removed dead `classify` / `reset` overlay scripts (never dispatched) from
+  the transition overlay.
 
 ## [0.2.0] — 2026-09-21
 

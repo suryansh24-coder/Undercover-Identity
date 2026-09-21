@@ -7,26 +7,14 @@ const OVERLAY_SCRIPTS = {
   'enter-system': {
     lines: [
       'ACCESS REQUESTED',
-      'AUTHENTICATING',
-      'SECURITY CHANNEL ESTABLISHED',
+      'ESTABLISHING SECURE CHANNEL',
+      'BIOMETRIC CHANNEL OPEN',
+      'INTELLIGENCE DATABASE CONNECTED',
+      'ENCRYPTION VERIFIED',
       'ACCESS GRANTED',
+      'WELCOME, OPERATIVE.',
     ],
     onComplete: ['GO', 'security'],
-  },
-  'classify': {
-    lines: [
-      'ACCESSING CLASSIFIED DATABASE...',
-      'DECRYPTING IDENTITY...',
-      'VERIFYING BIOMETRICS...',
-      'GENERATING CASE FILE...',
-      'ENCRYPTION VERIFIED...',
-      'IDENTITY LOCATED.',
-    ],
-    onComplete: ['GO', 'dossier'],
-  },
-  'reset': {
-    lines: ['PURGING SESSION', 'WIPING LOCAL DATA', 'SESSION CLEARED'],
-    onComplete: ['GO', 'upload'],
   },
 }
 
@@ -53,8 +41,8 @@ export default function TransitionOverlay() {
     doneRef.current = false
     setLineIndex(0)
 
-    const perLine = state.overlay === 'reset' ? 420 : 560
-    const force = state.overlay === 'reset' ? 1300 : script.lines.length * perLine
+    const perLine = 460
+    const force = script.lines.length * perLine
     const fastest = (reduced ? Math.min(160, perLine) : perLine) * script.lines.length
 
     for (let i = 1; i < script.lines.length; i += 1) {
