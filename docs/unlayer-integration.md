@@ -1,86 +1,111 @@
 # Unlayer react-image-editor integration
 
-> **Status: NOT integrated.** This document is the plan for the next phase.
-> The current editor works and ships without Unlayer.
+> **Status: DONE.** `@unlayer/react-image-editor@1.0.2` is live behind the
+> existing editor slot. This document describes the actual implementation.
 
-## Why the slot exists
+## Package
 
-`src/components/ImageEditor/index.jsx` was designed so the entire editor can be
-replaced by swapping a single lazy import — no changes to scenes, state, save
-handlers, or styling required.
+- **`@unlayer/react-image-editor` 1.0.2** (MIT, official Unlayer wrapper)
+- Peer dependency: `react >= 18` (project runs React 18.3.1)
+- Only dependency added at the app level: none extra — the wrapper declares
+  its own single type dependency.
 
-Current backing: `ImageEditorPlaceholder` (a hand-rolled module with real
-filters, crop, draw, text, stickers, undo/reset, and resize, rendered on
-`<canvas>` and exported via `renderComposite`).
+The wrapper (≈9 KB) lazy-loads the full editor from Unlayer's CDN
+(`https://cdn.unlayer.com/image-editor/embed.js`) the first time the editor
+scene mounts, then drives it via `window.ImageEditor.createEditor`. Core tools
+(crop, resize, filter, draw, text, shapes, stickers, frame) work without an
+API key; the optional AI Assistant (which needs a `projectId`) stays disabled.
 
-Target backing: `@unlayer/react-image-editor`.
+## Architecture
 
-## The contract (must be preserved)
+```
+EditorScene (App.jsx)
+└── ImageEditorSlot  src/components/ImageEditor/index.jsx
+    • owns loading (React.lazy), load-error and fatal states
+    • still the ONLY seam the rest of the app talks to
+    └── UnlayerEditor.jsx   (lazy chunk)
+        • renders the step-02 chrome (header + Return action)
+        • hosts <ImageEditor> from @unlayer/react-image-editor
+```
+
+Nothing outside `src/components/ImageEditor/` was modified for the swap. The
+old hand-rolled engine (`ImageEditorPlaceholder.jsx`, `presets.js`,
+`renderEngine.js`) was deleted.
+
+## The contract (unchanged, still honored)
 
 ```jsx
 <ImageEditorSlot
-  source={dataUrl}              // string — the uploaded/session image
-  onSave={(dataUrl, changed) => unit()}   // dataUrl: string, changed: boolean
-  onCancel={() => unit()}
+  source={state.editedImage || state.uploadedImage.dataUrl}
+  onSave={(dataUrl, changed) => { actions.setEdited(dataUrl, changed); actions.go('identity') }}
+  onCancel={() => actions.go('upload')}
 />
 ```
 
-- `source` — the image to open in the editor.
-- `onSave` — called with the final image as a data URL plus whether the user
-  made any changes. The scene then commits `setEdited(dataUrl, changed)` and
-  advances to `identity`.
-- `onCancel` — user returns to `upload` without saving.
+- `source` — data URL of the photographed (or already-edited) image.
+- `onSave(dataUrl, changed)` — called with Unlayer's export.
+- `onCancel()` — returns to the upload scene.
 
-## Swap steps
+## How image data flows through the editor
 
-1. `npm install @unlayer/react-image-editor`
-2. In `src/components/ImageEditor/index.jsx`, replace the lazy target:
+```
+PhotoUpload         → FileReader + local downscale → state.uploadedImage.dataUrl
+EditorScene         → source = state.editedImage ?? uploadedImage.dataUrl
+<ImageEditor image=…>  Unlayer decodes the data URL into its canvas
+user edits          → crop/resize/filter/draw/text/shapes/stickers/frame
+user presses Save   → Unlayer onSave({ dataUrl, blob })
+ImageEditorSlot     → onSave(dataUrl, true) → actions.setEdited(dataUrl, true)
+IdentityForm        → validate + build identity/dossier → decrypt →
+DossierDocument     → <img src={state.editedImage}> (the EDITED image)
+```
 
-   ```js
-   // before
-   const PlaceholderEditor = lazy(() =>
-     import('./ImageEditorPlaceholder').then((mod) => ({ default: mod.default }))
-   )
+Because `onSave` forwards Unlayer's flattened canvas data URL verbatim, the
+final dossier always uses the edited image — never the original upload.
 
-   // after
-   import ReactImageEditor from '@unlayer/react-image-editor'
-   ```
+## Configuration in use
 
-3. Rename `PlaceholderEditor` usage to `ReactImageEditor` and pass its
-   documented props:
-   - `source={source}`
-   - `onSave={onSave}` — map Unlayer's export to `(dataUrl, changed)`.
-   - `onCancel={onCancel}`
-4. Remove `ImageEditorPlaceholder.jsx`, its co-located CSS usage, and the
-   now-unused `presets.js` / `renderEngine.js` pieces (keep shareable camera
-   presets if you want them as default export options).
-5. Delete the obsolete tests/chunks that referenced the placeholder if any.
+```js
+options: { theme: 'dark' }
+minHeight: 560
+style: { width: '100%', minHeight: 'min(72vh, 680px)' }
+```
 
-## Suggested defaults
+- Dark theme matches the obsidian/champagne design language.
+- All default tools stay enabled (crop, resize, filter, draw, text, shapes,
+  stickers, frame). AI Assistant is disabled (no `projectId`).
+- `data-export-skip` on the host keeps `html-to-image` from ever capturing
+  the editor (defensive; editor is not mounted on the dossier scene).
 
-Unlayer ships size/quality defaults. To keep the dossier crisp we recommend:
+## Loading, error, and recovery handling (`ImageEditorSlot`)
 
-- Export format: PNG
-- Max width based on the current `RESIZE_PRESETS` scale behavior (2060px on a
-  1600px auto-scaled ingest) — roughly double-resolution export,
-  quality 0.92.
+| Situation | Behavior |
+| --- | --- |
+| Editor chunk loading | `Suspense` fallback: pulsing dot + "MOUNTING EDITOR MODULE…" |
+| Render-time crash | `EditorLoadingBoundary` → fatal panel with "Reload Editor" / "Return to Upload" |
+| Wrapper-level failure (`onError`) | Fatal panel showing the reported message; Reload Editor remounts (fresh `key`, Unlayer destroys + recreates the editor) |
+| Image decode/CORS/404 failure (`onLoadError`) | Fatal panel: "Try Again" or "Return to Upload" |
+| Missing `source` (e.g. reload into step 04) | Fatal panel with "Return to Upload" |
 
-## Risks / notes
+Remounting uses a `retryKey` bump as the `key` on the lazy editor, which
+forces a clean Unlayer destroy/recreate cycle. Cancel is always routed to
+`onCancel()` → `actions.go('upload')`, so application state is untouched.
 
-- **Bundle size.** Unlayer adds a large vendored chunk. It will be lazy-loaded
-  in the same slot, so the main bundle is unaffected; verify the chunk splits
-  correctly (one separate async chunk) after the swap.
-- **Styling.** Unlayer renders its own chrome. Apply the editor's themed
-  wrapper classes (`editor-tools`, `editor-panel`, etc.) sparingly; prefer
-  Unlayer's theme config so the toolbars match the design tokens.
-- **SSR none.** This app is client-rendered only, so no guard is needed.
-- **License.** Review Unlayer's licensing terms for commercial use before
-  shipping it to production.
+## Limitations
 
-## Acceptance criteria for the swap
+- **Runtime CDN dependency.** The embedding script is fetched from
+  `cdn.unlayer.com` on first editor mount. The rest of the app (landing →
+  upload → cover → decrypt → dossier) still makes zero network requests; the
+  editor chunk + CDN script load only when the editor scene is entered.
+  `options.offline = true` skips editor API calls but still requires the CDN
+  embed script (and a `licenseUrl` for paid offline entitlements), so it is
+  not enabled.
+- **Editor UI is Unlayer's.** Tool rail, icons, and panels come from the
+  editor's own dark chrome rather than the hand-rolled toolbars it replaced.
+  The surrounding scene, stepper, and typography are unchanged.
+- **License review.** Unlayer's editor is MIT-licensed; verify current terms
+  before shipping commercially (free tier / paid licenses).
 
-- [ ] Flow unchanged: upload → editor → save → cover → decrypt → dossier
-- [ ] `onSave` produces a data URL that round-trips through the dossier photo
-- [ ] `npm run lint`, `npm test`, `npm run build`, `npm run qa` all pass
-- [ ] Editor chunk still lazy-loads (separate async asset)
-- [ ] CHANGELOG entry under `[Unreleased]` moved to released
+## Rollback
+
+Restore the deleted placeholder files and flip the lazy import back to
+`./ImageEditorPlaceholder`; no other application code is coupled to Unlayer.

@@ -70,10 +70,12 @@ application and the image editor:
 />
 ```
 
-The slot lazy-loads `ImageEditorPlaceholder` today. Swapping in
-`@unlayer/react-image-editor` means pointing the lazy import at the Unlayer
-component and mapping its export callback — nothing else in the app changes.
-See [unlayer-integration.md](unlayer-integration.md).
+The slot lazy-loads `UnlayerEditor`, a thin adapter over the official
+`@unlayer/react-image-editor`. The wrapper is a small chunk that pulls
+Unlayer's editor from their CDN on first mount; the adapter maps the editor's
+`onSave({ dataUrl, blob })` to the slot's `(dataUrl, changed)` contract and
+surfaces `onLoadError` / `onError` to the slot's recovery UI. See
+[unlayer-integration.md](unlayer-integration.md).
 
 ## Dossier generation
 
@@ -118,7 +120,8 @@ correctly and no `console.log`/`console.debug` remains in the bundle.
 
 - Fonts: subsets are emitted per unicode range by Fontsource; the browser
   fetches only latin/greek/cyrillic ranges it needs.
-- Editor engine is lazy-loaded so the main bundle stays small
+- The Unlayer editor (adapter + CDN embed script) is lazy-loaded and only
+  requested when the editor scene mounts; the main bundle stays small
   (~66 KB gzip total for the app chunk).
 - Images are pre-scaled to ≤1600px on ingestion to keep canvas work and
   export fast.

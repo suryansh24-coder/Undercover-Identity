@@ -7,10 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-- Integrate `@unlayer/react-image-editor` behind the existing editor slot.
-  The slot (`src/components/ImageEditor/index.jsx`) is designed for this and
-  requires no other application changes. See
-  [docs/unlayer-integration.md](docs/unlayer-integration.md).
+- (no entries yet)
+
+## [0.2.0] — 2026-09-21
+
+### Added
+
+- **Unlayer integration.** The editor slot now loads the official
+  `@unlayer/react-image-editor@1.0.2` (dark theme, all default tools,
+  AI assistant disabled). Wrapper + CDN embed script are lazy-loaded on first
+  editor mount; image processing stays local.
+- Graceful editor recovery: suspense fallback while mounting, fatal panel for
+  render-time / wrapper failures (`onError`), and a targeted recovery panel
+  for image decode failures (`onLoadError`) — each with reload / try-again /
+  return-to-upload actions.
+
+### Changed
+
+- Removed the hand-rolled editor engine (`ImageEditorPlaceholder.jsx`,
+  `presets.js`, `renderEngine.js`) in favor of the Unlayer adapter
+  (`src/components/ImageEditor/UnlayerEditor.jsx`). The `ImageEditorSlot`
+  API is unchanged; the rest of the application is untouched.
+- Editor save output is now Unlayer's flattened canvas (crop, resize,
+  filters, draw, text, shapes, stickers, frames), which flows unchanged into
+  the final dossier.
 
 ## [0.1.0] — 2026-09-21
 

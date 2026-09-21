@@ -191,6 +191,29 @@
   letter-spacing: 0.1em;
 }
 
+/* ============================================================
+   UNLAYER HOST — the embedded editor container
+   ============================================================ */
+
+.editor-unlayer-wrap {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: #0b0d12;
+  overflow: hidden;
+}
+.editor-fatal-actions {
+  display: flex;
+  gap: var(--sp-4);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+@media (max-width: 720px) {
+  .editor-unlayer-wrap {
+    border-radius: var(--r-md);
+  }
+}
+
 /* ---- Crop overlay ---- */
 .crop-overlay {
   position: absolute;

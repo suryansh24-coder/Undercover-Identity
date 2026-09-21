@@ -64,15 +64,15 @@ CI runs the same four on every PR.
 
 ## Working on the image editor
 
-The editor is split into three files under `src/components/ImageEditor/`:
+The editor lives in `src/components/ImageEditor/` with two files:
 
-- `index.jsx` — the slot (lazy loading, error boundary). Do not change callers.
-- `ImageEditorPlaceholder.jsx` — the current working editor module.
-- `presets.js` / `renderEngine.js` — tone, frame, sticker definitions and the
-  canvas compositor.
+- `index.jsx` — the slot (lazy loading, error recovery). Do not change callers.
+- `UnlayerEditor.jsx` — thin adapter over the official
+  `@unlayer/react-image-editor` (scene chrome + prop mapping).
 
-If you are swapping in Unlayer, follow [unlayer-integration.md](unlayer-integration.md)
-rather than editing the placeholder in place.
+The wrapper renders Unlayer's own editor UI in its dark theme. To adjust the
+toolset, set `options.features.imageEditor.tools` in `UnlayerEditor.jsx`. See
+[docs/unlayer-integration.md](unlayer-integration.md).
 
 ## Troubleshooting
 

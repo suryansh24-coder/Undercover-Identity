@@ -5,7 +5,12 @@
 Undercover Identity is **privacy-first by construction**:
 
 - **No backend.** There are no servers, no databases, no API integrations.
-- **No network calls.** The core experience makes zero outbound requests. Fonts are bundled locally via Fontsource; audio cues are synthesized on-device by the Web Audio API.
+- **Nearly zero network traffic.** The core experience makes no outbound
+  requests. Fonts are bundled locally via Fontsource; audio cues are
+  synthesized on-device by the Web Audio API. The single exception is the
+  Unlayer editor scene, which fetches Unlayer's editor script from their CDN
+  to mount the editor — your image data is never sent anywhere (no API keys,
+  no uploads).
 - **No storage of your data.** Uploads, edits, and the generated dossier exist only in memory for the duration of the session and are wiped on `RESET` or page close.
 - **No analytics, no cookies, no trackers.**
 - **No environment variables are required** — there is no secret material to leak.
