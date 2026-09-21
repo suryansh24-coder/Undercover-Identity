@@ -1,0 +1,220 @@
+/* ============================================================
+   ATMOSPHERIC BACKGROUND SYSTEM
+   Layered, GPU-friendly, motion-conscious. Pure decoration —
+   always pointer-events: none and aria-hidden.
+   ============================================================ */
+
+.bg-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-bg);
+  pointer-events: none;
+  overflow: hidden;
+  perspective: 900px;
+}
+
+.bg-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(820px 520px at 50% 18%, rgba(201, 168, 106, 0.05), transparent 65%),
+    radial-gradient(600px 420px at 84% 82%, rgba(179, 19, 31, 0.045), transparent 70%);
+  opacity: 0.55;
+  transition: opacity var(--dur-slower) var(--ease-out);
+}
+body[data-booted='true'] .bg-veil {
+  opacity: 1;
+}
+
+/* ---- hairline grid (flat) ---- */
+.bg-grid {
+  position: absolute;
+  inset: -60px;
+  background-image:
+    linear-gradient(rgba(238, 240, 246, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(238, 240, 246, 0.035) 1px, transparent 1px);
+  background-size: 52px 52px;
+  transform: rotateX(58deg) translateY(24%);
+  transform-origin: 50% 100%;
+  mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 78%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 78%);
+  opacity: 0.5;
+}
+
+/* ---- fine grid (orthographic foreground) ---- */
+.bg-grid-front {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(238, 240, 246, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(238, 240, 246, 0.018) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0, 0, 0, 0.8), transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 45%, rgba(0, 0, 0, 0.8), transparent 75%);
+}
+
+/* ---- atmospheric glows (slow drift) ---- */
+.bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  will-change: transform;
+}
+.bg-glow--a {
+  width: 46vw;
+  height: 46vw;
+  left: -12vw;
+  top: -14vw;
+  background: radial-gradient(circle, rgba(43, 49, 64, 0.9), transparent 68%);
+  animation: glow-a 34s var(--ease-smooth) infinite alternate;
+}
+.bg-glow--b {
+  width: 38vw;
+  height: 38vw;
+  right: -14vw;
+  top: 6vh;
+  background: radial-gradient(circle, rgba(31, 35, 47, 0.95), transparent 68%);
+  animation: glow-b 42s var(--ease-smooth) infinite alternate;
+}
+.bg-glow--c {
+  width: 30vw;
+  height: 30vw;
+  left: 30vw;
+  bottom: -16vw;
+  background: radial-gradient(circle, rgba(143, 116, 72, 0.14), transparent 70%);
+  animation: glow-c 38s var(--ease-smooth) infinite alternate;
+}
+
+@keyframes glow-a {
+  to {
+    transform: translate(9vw, 6vh) scale(1.08);
+  }
+}
+@keyframes glow-b {
+  to {
+    transform: translate(-7vw, -5vh) scale(0.94);
+  }
+}
+@keyframes glow-c {
+  to {
+    transform: translate(-6vw, -4vh) scale(1.12);
+  }
+}
+
+/* ---- security scan lines ---- */
+.bg-scans {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 5px,
+    rgba(238, 240, 246, 0.012) 5px,
+    rgba(238, 240, 246, 0.012) 6px
+  );
+  opacity: 0.5;
+}
+
+/* ---- slow light sweep ---- */
+.bg-sweep {
+  position: absolute;
+  top: -40%;
+  bottom: -40%;
+  width: 26%;
+  left: -30%;
+  transform: rotate(12deg);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 168, 106, 0.028),
+    rgba(238, 240, 246, 0.02),
+    transparent
+  );
+  animation: sweep 14s var(--ease-smooth) infinite;
+}
+@keyframes sweep {
+  0% {
+    left: -34%;
+  }
+  55%,
+  100% {
+    left: 120%;
+  }
+}
+
+/* ---- vignette ---- */
+.bg-vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(2, 3, 6, 0.55) 100%),
+    linear-gradient(180deg, rgba(5, 6, 10, 0.4), transparent 14%, transparent 86%, rgba(3, 4, 8, 0.5));
+}
+
+/* ---- cinematic grain ---- */
+.bg-grain {
+  position: absolute;
+  inset: -20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  animation: grain-jitter 1.2s steps(4) infinite;
+}
+@keyframes grain-jitter {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-6px, 4px);
+  }
+  50% {
+    transform: translate(5px, -3px);
+  }
+  75% {
+    transform: translate(-4px, -5px);
+  }
+  100% {
+    transform: translate(6px, 5px);
+  }
+}
+
+/* ---- particle field ---- */
+.bg-particles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ---- moving scan highlight strip ---- */
+.bg-beam {
+  position: absolute;
+  inset: -20% 0;
+  height: 22%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(201, 168, 106, 0.05),
+    rgba(238, 240, 246, 0.03),
+    transparent
+  );
+  animation: beam 11s var(--ease-smooth) infinite;
+  opacity: 0.6;
+}
+@keyframes beam {
+  0% {
+    top: -24%;
+  }
+  60%,
+  100% {
+    top: 110%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-glow,
+  .bg-sweep,
+  .bg-grain,
+  .bg-beam {
+    animation: none;
+  }
+}
