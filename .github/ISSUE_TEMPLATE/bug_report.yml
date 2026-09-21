@@ -1,0 +1,39 @@
+---
+name: Bug report
+about: Report a bug in the experience
+title: '[Bug] '
+labels: bug, triage
+assignees: ''
+---
+
+**Describe the bug**
+
+A clear, concise description of what went wrong.
+
+**Reproduction**
+
+Steps to reproduce:
+
+1. Go to `...`
+2. Click on `...`
+3. Upload `...`
+4. See error
+
+**Expected behavior**
+
+What you expected to happen.
+
+**Environment**
+
+- Browser + version:
+- OS:
+- Device (desktop / tablet / mobile):
+- Resolution / viewport size:
+
+**Screenshots**
+
+If applicable, add screenshots. (For dossier export issues, note whether the PNG download failed, was blank, or looked wrong.)
+
+**Additional context**
+
+Anything else relevant — previous step in the flow, audio on/off, reduced-motion preference, etc.

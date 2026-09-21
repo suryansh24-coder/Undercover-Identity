@@ -1,0 +1,29 @@
+name: Feature request
+about: Suggest an idea for Undercover Identity
+title: '[Feature] '
+labels: enhancement
+assignees: ''
+
+---
+
+**Is your idea related to a problem?**
+
+A clear description of the problem or gap you are trying to solve.
+
+**Proposed feature**
+
+What should happen, and where in the flow (landing, clearance, upload, editor, cover, decrypt, dossier).
+
+**Design notes**
+
+- Should this stay fully client-side (no backend / network)?
+- Any aesthetic constraints from the design system (see docs/design-system.md)?
+- Does it interact with the image editor slot or the dossier export?
+
+**Alternatives considered**
+
+What else could address the same need.
+
+**Additional context**
+
+Any mockups, references, or notes.
