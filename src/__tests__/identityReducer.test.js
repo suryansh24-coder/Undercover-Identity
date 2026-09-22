@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+﻿import { describe, it, expect } from 'vitest'
 import { identityReducer, INITIAL_STATE } from '../context/identityReducer'
 
 describe('identityReducer', () => {
@@ -68,8 +68,10 @@ describe('identityReducer', () => {
     expect(seeded.toast).toBeTruthy()
   })
 
-  it('toggles sound', () => {
-    expect(identityReducer(INITIAL_STATE, { type: 'TOGGLE_SOUND' }).soundEnabled).toBe(true)
+  it('toggles sound from each end of the preference', () => {
+    expect(
+      identityReducer({ ...INITIAL_STATE, soundEnabled: false }, { type: 'TOGGLE_SOUND' }).soundEnabled
+    ).toBe(true)
     expect(
       identityReducer({ ...INITIAL_STATE, soundEnabled: true }, { type: 'TOGGLE_SOUND' }).soundEnabled
     ).toBe(false)

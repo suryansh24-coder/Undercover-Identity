@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useIdentity } from '../../context/IdentityContext'
-import { useOptionalSound } from '../../hooks/useOptionalSound'
+import { primeAudio, setSoundEnabled, playSound } from '../../utils/soundEngine'
 import { IconButton } from '../common/ActionButton'
 import Icon from '../common/Icon'
 
@@ -24,14 +24,28 @@ function Clock() {
 
 function SoundToggle() {
   const { state, actions } = useIdentity()
-  const play = useOptionalSound(state.soundEnabled)
+  const sound = state.soundEnabled
   return (
     <IconButton
-      icon={state.soundEnabled ? 'sound' : 'mute'}
-      label={state.soundEnabled ? 'Mute system sounds' : 'Enable system sounds'}
+      icon={sound ? 'sound' : 'mute'}
+      label={sound ? 'Mute system sounds' : 'Enable system sounds'}
       onClick={() => {
-        actions.toggleSound()
-        if (!state.soundEnabled) play('click')
+        if (!sound) {
+          // Enabling — this click IS the first gesture: prime and resume
+          // now so the GTA confirmation chime is genuinely audible.
+          if (primeAudio()) {
+            setSoundEnabled(true)
+            actions.toggleSound()
+            playSound('gta')
+          } else {
+            actions.notify('AUDIO UNAVAILABLE — STAYING SILENT.', 'error')
+          }
+        } else {
+          // Muting — an audible click first, then go quiet.
+          playSound('click')
+          setSoundEnabled(false)
+          actions.toggleSound()
+        }
       }}
       className="sys-sound"
     />

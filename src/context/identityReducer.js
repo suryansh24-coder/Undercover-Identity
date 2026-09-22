@@ -20,7 +20,7 @@ export const INITIAL_STATE = {
   overlay: null,
   error: null,
   toast: null,
-  soundEnabled: false,
+  soundEnabled: true,
   booted: false,
 }
 
